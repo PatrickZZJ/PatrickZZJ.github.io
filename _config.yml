@@ -25,7 +25,7 @@ twitter_username: jekyllrb
 github_username:  jekyll
 
 #customized
-theme: architect
+theme: jekyll-theme-architect
 
 # Build settings
 markdown: kramdown
