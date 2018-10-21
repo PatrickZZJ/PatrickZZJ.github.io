@@ -1,7 +1,7 @@
 # Site settings 配置站点
 title: 'PatrickZ'
-description: 'your web description'
-keywords: 'your web keywords, another keywords'
+description: 'This is my personal blog'
+keywords: 'learning blog'
 url: 'https://PatrickZZJ.github.io' # your host
 
 # nav 中文字符空格：&emsp;
