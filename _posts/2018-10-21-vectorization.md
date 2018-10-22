@@ -1,5 +1,5 @@
 ---
-layout: post
+,layout: post
 title: '向量化编程总结（Vectorization）'
 date: 2018-10-21
 author: Patrick Zhang
@@ -16,7 +16,7 @@ tags: coding python
 
 
 
-### 二. 两个个例子
+### 二. 两个例子
 
 * 第一个例子来自于 *Stanford CS231n Spring 2018*  的 *assignment1*[^2]。***这个例子总结了一般性向量化编程的思想与方法。***
 
@@ -172,7 +172,33 @@ def svm_loss_naive(W, X, y, reg):
   return loss, dW
 ```
 
-> 接着我们尝试对此进行向量化计算：
+
+
+> 接着我们尝试用构造高维数组的方法对此尝试直接向量化转换：
+
+step 1:  `scores = X[i].dot(W)`只与i循环相关，拓展一个维度变为`scores = X.dot(W)`
+
+step 2: `correct_class_score = scores[y[i]]` 只与i循环相关，拓展一个维度变为</br> ``correct_class_score = scores[np.arange(num_train), y]``注意这里利用了np.array的特殊索引方式
+
+step 3: `if j == y[i]: continue`涉及到i,j两个循环，我们把条件语句转变成mask矩阵。</br>`mask1 = np.ones((num_train, num_classes);` `mask1[np.arange(num_train), y] = 0`
+
+step 4: `margin = scores[j] - correct_class_score + 1`涉及i,j两个循环变为，`margin = scores -scores[np.arange(num_train), y][:, np.newaxis] + 1 `
+
+step 5: `if margin > 0:`涉及i,j两个循环，条件语句变mask，转换为：`mask2 = margin > 0`
+
+step 6: `loss += margin`涉及i,j两个循环，累加操作是伪向量化用sum函数实现：</br>`loss += np.sum(mask1*mask2*margin)`
+
+step 7: `dW[:, j] += X[i]`涉及i,j两个循环, 构造高维数组使变量都包含i,j两个维度再进行累加：</br>`dW += np.sum(X[:,np.newaxis,:]*mask[:,:,np.newaxis], axis=0).T`
+
+step 8: `dW[:, y[i]] += -X[i]`涉及i循环，但是等式左边包含y[i]维度(下文称k维度，大小为num_classes)，所以等式左边也要包含y[i]维度,因为不包含ij两个维度所以不用加ij平面的mask：</br>`X_3 -= X[:,:,np.newaxis] `在i-k平面只有满足k=y[i]的点才有效所以我们构造i-k平面的mask: `maskik = np.zeros((num_train, num_classes));maskik[np.arange(num_train), y]=1`最终得到`dW -= np.sum(X_3[maskik[:,np.newaxis,:]], axis=0)`
+
+
+
+实验结果发现这样子运算速度**反倒还没有循环来得快**，猜测是因为其实数组变到三维及以上后，硬件并不能很好地发掘其并行性。推导的过程也比较**抽象**容易出错。
+
+
+
+> 接着我们再尝试用反向传播传统方法，利用链式法则和矩阵运算来计算推导：
 
 ```python
 def svm_loss_vectorized(W, X, y, reg):
@@ -192,11 +218,15 @@ def svm_loss_vectorized(W, X, y, reg):
   # Implement a vectorized version of the structured SVM loss, storing the    #
   # result in loss.                                                           #
   #############################################################################
+  #1
   S = np.dot(X, W)
-  mask = np.reshape((list(range(num_train)) + list(y)), (2, -1)).tolist()
-  S0 = S - S[mask].reshape(-1,1) + 1
+  #2
+  S0 = S - S[np.arange(num_train), y][:, np.newaxis] + 1
+  #3
   S1 = np.maximum(S0, 0)
+  #4
   loss = (np.sum(S1) - num_train)/num_train
+  #5
   loss += reg * np.sum(W * W)
   #############################################################################
   #                             END OF YOUR CODE                              #
@@ -211,23 +241,53 @@ def svm_loss_vectorized(W, X, y, reg):
   # to reuse some of the intermediate values that you used to compute the     #
   # loss.                                                                     #
   #############################################################################
-  mask_margin = np.zeros((num_train, num_classes)) # where margin[i,j]>=0 = 1
-  mask_margin[S0>0] = 1
-  mask_XW = np.ones((num_train, num_classes))
-  mask_XW = mask_XW * mask_margin
-  y_sum = np.sum(mask_margin, axis=1)
-  mask_XW[np.arange(num_train), y] -= y_sum
-  dW = np.dot(X.T, mask_XW)/num_train
+  #5
   dW += reg * W
+  #4  
+  dSum = np.ones((num_train, num_classes))/num_train
+  #3
+  tmp = np.zeros((num_train, num_classes))
+  tmp[S0>0] = 1
+  dMax = tmp * dSum
+  #2 
+  dS = dMax
+  dS[np.arange(num_train), y] -= np.sum(dMax, axis = 1)
+  #1
+  dW = np.dot(X.T, dS)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
-
   return loss, dW
-
 ```
 
-还没写完，回顾起来竟然还有些地方没有想清楚，明天继续，感受到时间的宝贵
+经测试此种方法的运行效率最高。正向传播的向量化比较好推导，而由于在循环内的判断与较为复杂的公式在推导反向传播的向量化时会有一种让人无从下手的感觉。但是按照链式法则适当拆分正向传播并与反向传播一一对应起来思路就会变得清晰。
+
+这里值得总结有两点：
+
+1.  在计算正向传播时应该适当地划分（计算图的正确划分）**使正向传播尽可能分成好求倒的几步**。在反向传播时与正向传播一一对应方便推导与检查。
+
+2. 一个公式值得记忆： 
+   $$
+   if:\quad L=f(Z) \quad Z=WX\\
+   then: \quad
+   \frac{\partial L}{\partial W}=\frac{\partial L}{\partial Z} X^{T}
+   $$
+
+
+
+
+
+
+### 三. 总结
+
+* 从本质上来说代码的向量化可以利用硬件提供的SIMD指令
+* 速度上一般是：算法优化后的代码 > 直接向量化的代码 > 用显示循环的代码。但由于硬件更适合计算一维或二维的数组在构造了更高维度的数组后代码的效率不一定会提高
+* 通过判断循环中数据的依赖关系来决定循环是否可以被向量化
+* 反向传播时要合理地拆分求倒步骤并且记住一些常用矩阵求倒公式
+
+
+
+
 
 ### 参考文献
 
