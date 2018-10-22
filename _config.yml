@@ -22,6 +22,8 @@ about: false
 aboutyou: 'your introduction'
 portraits: '/assets/profile.jpeg' # your portraits image file path
 
+future: true
+
 # SNS
 SNS: true
 SNS-icon: #['Facebook', 'weibo', 'qq', 'github', 'Dribbble', 'Twitter', 'instagram', 'weixin', 'Codepen']
