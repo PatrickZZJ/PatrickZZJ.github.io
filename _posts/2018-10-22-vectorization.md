@@ -1,7 +1,7 @@
 ---
 layout: post
 title: '向量化编程总结（Vectorization）'
-date: 2018-10-21
+date: 2018-10-22
 author: Patrick Zhang
 color: rgb(16, 46, 94)
 cover: '/assets/vectorization.jpeg'
@@ -272,6 +272,7 @@ def svm_loss_vectorized(W, X, y, reg):
    then: \quad
    \frac{\partial L}{\partial W}=\frac{\partial L}{\partial Z} X^{T}
    $$
+
 
 
 
