@@ -1,5 +1,5 @@
 ---
-,layout: post
+layout: post
 title: '向量化编程总结（Vectorization）'
 date: 2018-10-21
 author: Patrick Zhang
