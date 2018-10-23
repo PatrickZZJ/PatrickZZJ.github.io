@@ -6,6 +6,7 @@ author: Patrick Zhang
 color: rgb(16, 46, 94)
 cover: '/assets/vectorization.jpeg'
 tags: coding python
+mathjax: true
 ---
 
 > 向量化编程能极大地加快程序运行速度，是机器学习、数据处理等领域的重要技术，在此文中通过例子总结一下向量化编程的思想和方法
@@ -272,6 +273,7 @@ def svm_loss_vectorized(W, X, y, reg):
    then: \quad
    \frac{\partial L}{\partial W}=\frac{\partial L}{\partial Z} X^{T}
    $$
+
 
 
 
