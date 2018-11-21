@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>HTML5+jQuery制作温馨浪漫爱心表白动画特效(我们程序员也有浪漫的时候)-psd素材网</title>
+
+<style type="text/css">
+@font-face {
+	font-family: digit;
+	src: url('digital-7_mono.ttf') format("truetype");
+}
+</style>
+
+<link href="css/default.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/garden.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+</head>
+<embed src="./Iron & Wine - Flightless Bird, American Mouth.mp3" autostart="true" loop="true" hidden="true"></embed>
+<body>
+
+<div id="mainDiv">
+	<div id="content">
+		<div id="code">
+			<span class="comments">/**</span><br />
+			<span class="space"/><span class="comments">*创作：2018—11-10 </span><br />
+			<span class="space"/><span class="comments">*纪念：2018-11-28 </span><br />
+			<span class="space"/><span class="comments">*标题：My Dreams </span><br />
+			<span class="space"/><span class="comments">*/</span><br />
+			In my <span class="keyword">dreams</span><span class="comments">    //在我梦里</span><br />
+			you are one mighty thunder<span class="comments">    //你是一道惊雷</span><br />
+			blasting through the bottom of the starry sky<span class="comments">    //打破星空谷底</span><br />
+			trembles my heart<span class="comments">    //震撼我心</span><br />
+			dazzles my eyes<span class="comments">    //让我眼花缭乱</span><br />
+			<br />
+			In my <span class="keyword">dreams</span><span class="comments">    //在我梦里</span><br />
+			you are the first mizzle of the summer<span class="comments">    //你是初夏第一缕细雨</span><br />
+			waking up the restlessness in the soil<span class="comments">    //唤醒了泥土里的焦躁不安</span><br />
+			increasing the wild nature between the branches and leaves<br />
+			<span class="comments">    //增长了枝叶间的蓬勃野性</span><br />
+			<br />
+			In my <span class="keyword">dreams</span><span class="comments">    //在我梦里</span><br />
+			you are wind in the prairie<span class="comments">    //你是草原的清风</span><br />
+			smell of the ocean<span class="comments">    //大海的味道</span><br />
+			evening sun on the roofline<span class="comments">    //屋脊上的夕阳</span><br />
+			warmth in the quilt<span class="comments">    //被窝里的温暖</span><br />
+			<br />
+			You are <span class="keyword">many things</span><br /> 
+			in my <span class="keyword">dreams</span><br />
+			<span class="comments">    //你是我梦中的许多</span><br />
+			because you are becoming <br />
+			<span class="keyword">everything</span><br />
+			to me<br />
+			<span class="comments">    //因为你正成为我生命中的所有</span><br />
+<!--			<span class="comments">// Fall in love river. </span><br />
+			The boy love the girl;<br />
+			<span class="comments">// They love each other.</span><br />
+			The girl loved the boy;<br />
+			<span class="comments">// AS time goes on.</span><br />
+			The boy can not be separated the girl;<br />
+			<span class="comments">// At the same time.</span><br />
+			The girl can not be separated the boy;<br />
+			<span class="comments">// Both wind and snow all over the sky.</span><br />
+			<span class="comments">// Whether on foot or 5 kilometers.</span><br />
+			<span class="keyword">The boy</span> very <span class="keyword">happy</span>;<br />
+			<span class="keyword">The girl</span> is also very <span class="keyword">happy</span>;<br />
+			<span class="placeholder"/><span class="comments">// Whether it is right now</span><br />
+			<span class="placeholder"/><span class="comments">// Still in the distant future.</span><br />
+			<span class="placeholder"/>The boy has but one dream;<br />
+			<span class="comments">// The boy wants the girl could well have been happy.</span><br />
+			<br>
+			<br>
+			I want to say:<br />
+			Baby, I love you forever;<br /> -->
+		</div>
+		<div id="loveHeart">
+			<canvas id="garden"></canvas>
+			<div id="words">
+				<div id="messages">
+					小宝贝，这是我们相爱在一起的时光。
+					<div id="elapseClock"></div>
+				</div>
+				<div id="loveu">
+					生日快乐，一直快快乐乐。<br/>
+					<div class="signature">- 爱你的大笨蛋</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var offsetX = $("#loveHeart").width() / 2;
+var offsetY = $("#loveHeart").height() / 2 - 55;
+var together = new Date();
+together.setFullYear(2016, 6, 10);
+together.setHours(23);
+together.setMinutes(30);
+together.setSeconds(0);
+together.setMilliseconds(0);
+
+if (!document.createElement('canvas').getContext) {
+	var msg = document.createElement("div");
+	msg.id = "errorMsg";
+	msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+	document.body.appendChild(msg);
+	$("#code").css("display", "none")
+	$("#copyright").css("position", "absolute");
+	$("#copyright").css("bottom", "10px");
+	document.execCommand("stop");
+} else {
+	setTimeout(function () {
+		startHeartAnimation();
+	}, 5000);
+
+	timeElapse(together);
+	setInterval(function () {
+		timeElapse(together);
+	}, 500);
+
+	adjustCodePosition();
+	$("#code").typewriter();
+}
+</script>
+
+</body>
+</html>
