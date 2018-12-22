@@ -4,12 +4,10 @@ title: '数字电路国外顶尖大学课程信息调研'
 date: 2018-12-21
 author: Patrick Zhang
 color: rgb(16, 46, 94)
-cover: '/assets/vectorization.jpeg'
-tags: INC
+cover: '/assets/digital_circuit.png'
+tags: IC
 mathjax: true
 ---
-
-# 数字电路国外顶尖大学课程信息调研
 
 > 目标：调查斯坦福、伯克利等国外顶尖大学数字电路课程相关资料，包括参考数目、教学PPT、授课视频等等。
 
